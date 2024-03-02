@@ -1,0 +1,6 @@
+SpeechRecognition
+pyaudio
+openai
+pydub
+fast_whisper
+threading
