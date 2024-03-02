@@ -6,26 +6,26 @@ from friday_voice import FridayVoice
 from friday_whisper import FridayListen
 from auto_delete_audio import delete_old_files
 
-client = openai.Client(api_key="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")
+client = openai.Client(api_key="Your_API_KEY")
 
 while True:
     inputMessage = str(FridayListen.transcribe_regular_speech())
     
 
     message = client.beta.threads.messages.create(
-        thread_id="thread_TnPKlQYocmrmskfhdQD9n3Bh",
+        thread_id="Your_THREAD_KEY",
         role="user",
         content=inputMessage,
     )
 
     run = client.beta.threads.runs.create(
-        thread_id="thread_TnPKlQYocmrmskfhdQD9n3Bh",
-        assistant_id="asst_UR0O2nwZSIZwdYKiu1R75YrO",
+        thread_id="Your_THREAD_KEY",
+        assistant_id="Your_ASSISTANT_KEY",
         instructions="You are a assistant who is similar to J.A.R.V.I.S and F.R.I.D.A.Y from movie \"Ironman\""
     )
 
     while True:
-        run_status = client.beta.threads.runs.retrieve(thread_id="thread_TnPKlQYocmrmskfhdQD9n3Bh",
+        run_status = client.beta.threads.runs.retrieve(thread_id="Your_THREAD_KEY",
                                                        run_id=run.id)
         if run_status.status == "completed":
             break
@@ -35,7 +35,7 @@ while True:
         time.sleep(2)
 
     messages = client.beta.threads.messages.list(
-        thread_id="thread_TnPKlQYocmrmskfhdQD9n3Bh"
+        thread_id="Your_THREAD_KEY"
     )
 
     print(messages)
