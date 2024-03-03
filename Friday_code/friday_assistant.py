@@ -1,65 +1,68 @@
 import openai
-import time
-from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
 
-from friday_voice import FridayVoice
-from friday_whisper import FridayListen
-from auto_delete_audio import delete_old_files
 
-client = openai.Client(api_key="Your_API_KEY")
+client = openai.Client(api_key="YOUR_API_KEY")
 
-while True:
-    inputMessage = str(FridayListen.transcribe_regular_speech())
+
+def GoogleSearch(params):
+    url = f"https://www.googleapis.com/customsearch/v1?q={params['q']}&tbm=nws&location={params['location']}&num={params['num']}&key={params['api_key']}&cx={params['cx']}"
+    response = requests.get(url)
+    data = response.json()
+    return data
+
+
+
+def generate_google_search_query(user_input):
+    prompt = f"Convert the following user query into a optimized Google search query: '{user_input}"
+
+    try:
+        completion = client.chat.completions.create(
+            model="gpt-4-1106-preview",
+            messages=[
+                {"role": "system", "content": "Your name is Friday and you are a Google Search Expert. Say sir like you are a servant. Your task is to convert unstructured user inputs to optimized Google search queries. Example: USER INPUT: 'Why was Sam Altman fired from OpenAI?' OPTIMIZED Google Search Query: 'Sam Altman Fired OpenAI'"},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        if completion.choices:
+            response_message = completion.choices[0].message
+            if hasattr(response_message, 'content'):
+                return response_message.content.strip()
+            else:
+                return "No content in response"
+        else:
+            return "No response from GPT"
+    except Exception as e:
+        print(f"Error in generating Google search query: {e}")
+        return None
+
+def get_organic_results(query, num_results=3, location= "United States"):
+    params={
+        "q": query,
+        "tbm": "nws",
+        "location": location,
+        "num": str(num_results),
+        "api_key": "YOUR_API_KEY",
+        "cx": "363427b9dc4b144e8"
+    }
+
+    search = GoogleSearch(params)
+    news_results = search.get("items", [])
+    urls = [result['link'] for result in news_results]
+    return urls
+
+def scrape_website(url):
+    headers = {'User-Agent' : 'Mozilla/5.0'}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        page_content = response.content
+        soup = BeautifulSoup(page_content, 'html.parser')
+        paragraphs = soup.find_all('p')
+        scraped_data = [p.get_text() for p in paragraphs]
+        formatted_data = "\n".join(scraped_data)
+        return url, formatted_data
+    else:
+        return url, "Failed to retrieve the webpage"
     
-
-    message = client.beta.threads.messages.create(
-        thread_id="Your_THREAD_KEY",
-        role="user",
-        content=inputMessage,
-    )
-
-    run = client.beta.threads.runs.create(
-        thread_id="Your_THREAD_KEY",
-        assistant_id="Your_ASSISTANT_KEY",
-        instructions="You are a assistant who is similar to J.A.R.V.I.S and F.R.I.D.A.Y from movie \"Ironman\""
-    )
-
-    while True:
-        run_status = client.beta.threads.runs.retrieve(thread_id="Your_THREAD_KEY",
-                                                       run_id=run.id)
-        if run_status.status == "completed":
-            break
-        elif run_status.status == "failed":
-            print("Run failed:", run_status.last_error)
-            break
-        time.sleep(2)
-
-    messages = client.beta.threads.messages.list(
-        thread_id="Your_THREAD_KEY"
-    )
-
-    print(messages)
-
-    last_message = messages.data[0]
-    response_text = last_message.content[0].text.value
-    print(f'Last Response: {response_text}')
-
-    tts_response = client.audio.speech.create(
-        model="tts-1",
-        voice="nova",
-        input=response_text,
-    )
-
-    current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
-    output_file = f"Output_Audio/output_{current_time}.mp3"
-    tts_response.stream_to_file(output_file)
-
-    voice_player = FridayVoice(output_file)
-    voice_player.start()
-
-    delete_old_files("Output_Audio", 5)
-
-    user_input = input("Press Enter to continue or type 'exit' to quit: ")
-    voice_player.stop()
-    if user_input.lower() == "exit":
-        break
