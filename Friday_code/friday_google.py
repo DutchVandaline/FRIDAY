@@ -44,7 +44,7 @@ def get_organic_results(query, num_results=3, location= "United States"):
         "location": location,
         "num": str(num_results),
         "api_key": "YOUR_API_KEY",
-        "cx": "363427b9dc4b144e8"
+        "cx": "YOUR_CX"
     }
 
     search = GoogleSearch(params)
