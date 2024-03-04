@@ -42,7 +42,7 @@ class ImageLabel(tk.Label):
             self.after(self.delay, self.next_frame)
 
 def start_listening():
-    assistant = FridayAssistant
+    assistant = FridayAssistant()
     threading.Thread(target=assistant.run_assistant).start()
 
 def start_gui():
