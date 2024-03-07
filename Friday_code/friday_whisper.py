@@ -28,23 +28,24 @@ class FridayListen:
             text = recognizer.recognize_google(audio)
 
             print("You said:", text)
+            return text
 
-            # Check if the word "Friday" is present in the recognized text
-            if "Friday" in text:
-                # Extract the text after "Friday"
-                index = text.index("Friday") + len("Friday")
-                text_after_friday = text[index:].strip()
-                print(text_after_friday)
-                return text_after_friday, True
-            else:
-                return None, False
+            #Check if the word "Friday" is present in the recognized text
+            # if "Friday" in text:
+            #     # Extract the text after "Friday"
+            #     index = text.index("Friday") + len("Friday")
+            #     text_after_friday = text[index:].strip()
+            #     print(text_after_friday)
+            #     return text_after_friday
+            # else:
+            #     return None
 
         except sr.UnknownValueError:
             print("Sorry, I couldn't understand what you said.")
-            return None, False
+            return None
         except sr.RequestError as e:
             print("Sorry, I couldn't request results from Google Speech Recognition service; {0}".format(e))
-            return None, False
+            return None
 
     def listen_continuous():
         while True:
