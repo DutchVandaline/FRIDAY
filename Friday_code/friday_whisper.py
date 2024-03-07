@@ -4,8 +4,6 @@ import speech_recognition as sr
 model_size = "tiny"
 model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
-
-
 class FridayListen:
     def transcribe_whisper_audio(audio_file):
         segments, info = model.transcribe(audio_file, beam_size=5)
@@ -14,7 +12,6 @@ class FridayListen:
 
         for segment in segments:
             print("[%.2fs -> %.2fs] %s" % (segment.start, segment.end, segment.text))
-
 
     def transcribe_regular_speech():
         recognizer = sr.Recognizer()
@@ -29,9 +26,29 @@ class FridayListen:
         try:
             print("Transcribing...")
             text = recognizer.recognize_google(audio)
+
             print("You said:", text)
-            return text
+
+            # Check if the word "Friday" is present in the recognized text
+            if "Friday" in text:
+                # Extract the text after "Friday"
+                index = text.index("Friday") + len("Friday")
+                text_after_friday = text[index:].strip()
+                print(text_after_friday)
+                return text_after_friday, True
+            else:
+                return None, False
+
         except sr.UnknownValueError:
             print("Sorry, I couldn't understand what you said.")
+            return None, False
         except sr.RequestError as e:
             print("Sorry, I couldn't request results from Google Speech Recognition service; {0}".format(e))
+            return None, False
+
+    def listen_continuous():
+        while True:
+            text_after_friday, friday_detected = FridayListen.transcribe_regular_speech()
+            print(text_after_friday)
+            if friday_detected:                
+                break
