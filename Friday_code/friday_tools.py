@@ -1,9 +1,11 @@
 import openai
 import requests
 from bs4 import BeautifulSoup
+from friday_voice import FridayVoice
+from colorama import Fore
 
 
-client = openai.Client(api_key="YOUR_API_KEY")
+client = openai.Client(api_key="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")
 
 
 def GoogleSearch(params):
@@ -12,8 +14,6 @@ def GoogleSearch(params):
     data = response.json()
     return data
 
-
-
 def generate_google_search_query(user_input):
     prompt = f"Convert the following user query into a optimized Google search query: '{user_input}"
 
@@ -21,7 +21,7 @@ def generate_google_search_query(user_input):
         completion = client.chat.completions.create(
             model="gpt-4-1106-preview",
             messages=[
-                {"role": "system", "content": "Your name is Friday and you are a Google Search Expert. Say sir like you are a servant. Your task is to convert unstructured user inputs to optimized Google search queries. Example: USER INPUT: 'Why was Sam Altman fired from OpenAI?' OPTIMIZED Google Search Query: 'Sam Altman Fired OpenAI'"},
+                {"role": "system", "content": "Your task is to convert unstructured user inputs to optimized Google search queries. Example: USER INPUT: 'Why was Sam Altman fired from OpenAI?' OPTIMIZED Google Search Query: 'Sam Altman Fired OpenAI'"},
                 {"role": "user", "content": prompt}
             ]
         )
@@ -38,13 +38,14 @@ def generate_google_search_query(user_input):
         return None
 
 def get_organic_results(query, num_results=3, location= "United States"):
+    FridayVoice.speak_response("Searching in progress", client)
     params={
         "q": query,
         "tbm": "nws",
         "location": location,
         "num": str(num_results),
-        "api_key": "YOUR_API_KEY",
-        "cx": "YOUR_CX"
+        "api_key": "AIzaSyCdurMTLCQcr70rao7MxuHLJhhXnapqbm4",
+        "cx": "363427b9dc4b144e8"
     }
 
     search = GoogleSearch(params)
@@ -66,3 +67,88 @@ def scrape_website(url):
     else:
         return url, "Failed to retrieve the webpage"
     
+assistant = client.beta.assistants.create(
+    name="Friday",
+    instructions= "Your name is Friday and you are a Google Search Expert. Say sir like you are a servant. You are an assistant capable of fetching and displaying news articles based on user queries.",
+    model="gpt-4-1106-preview",
+    tools=[
+        {
+            "type" : "function",
+            "function" : {
+                "name": "get_organic_results",
+                "description": "Fetch news URLs based on a search query",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query"
+                    },
+                    "num_results": {
+                        "type": "integer",
+                        "description": "Number of results to return"
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "Location for search context"
+                    }
+                    },
+                    "required": [
+                    "query"
+                    ]
+                }
+            }},
+    
+     {
+            "type" : "function",
+            "function" : {
+                "name": "scrape_website",
+                "description": "Scrape the textual content from a given URL",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "URL to scrape"
+                    }
+                    },
+                    "required": [
+                    "url"
+                    ]
+                }
+            }}
+        ]
+)
+    
+while True:
+    user_query = input(Fore.CYAN + "Please enter your query (type 'exit' to quit) : ")
+    if user_query.lower() == 'exit':
+        break
+    
+    google_search_query = generate_google_search_query(user_query)
+    if google_search_query:
+        news_urls = get_organic_results(google_search_query)
+        if  news_urls:
+            url, news_content = scrape_website(news_urls[0])
+            grounding_context = f"Context: {news_content}\nUser Query: {user_query}"
+            print(grounding_context)
+            
+            completion = client.chat.completions.create(
+            model="gpt-4-1106-preview",
+            messages=[
+                {"role": "system", "content": "Your name is Friday. Say sir like you are a servant. You are a helpful assistant, always return only the essential parts that answers the USER original USER query. Be terse"},
+                {"role": "user", "content": grounding_context}
+                ]
+            ) 
+            
+            response = completion.choices[0].message.content if completion.choices[0].message else ""
+            print(Fore.YELLOW + response)
+            #FridayVoice.speak_response(response, client)
+        
+        else:
+            print("No news articles found for your query")
+    else:
+        print("Failed to generate a Google search Query")
+            
+            
+            
