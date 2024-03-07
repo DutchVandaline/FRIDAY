@@ -2,7 +2,6 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from itertools import count
 from friday_assistant import FridayAssistant
-from friday_whisper import FridayListen
 import threading
 
 class ImageLabel(tk.Label):
@@ -42,8 +41,16 @@ class ImageLabel(tk.Label):
             self.after(self.delay, self.next_frame)
 
 def start_listening():
-    assistant = FridayAssistant()
-    threading.Thread(target=assistant.run_assistant).start()
+    global assistant_thread  # Define the thread as a global variable
+    assistant_thread = threading.Thread(target=FridayAssistant().determin_daily)
+    assistant_thread.start()
+
+def stop_listening():
+    global assistant_thread
+    if assistant_thread and assistant_thread.is_alive():
+        FridayAssistant().stop_running()
+        assistant_thread.join()
+
 
 def start_gui():
     root = tk.Tk()
@@ -62,6 +69,8 @@ def start_gui():
 
     exit_button = tk.Button(button_frame, text="Exit", command=root.destroy, bg="black", fg="white", padx=20, pady=10, font=("Arial", 12))
     exit_button.grid(row=0, column=1, padx=10, pady=10)
+
+    root.protocol("WM_DELETE_WINDOW", stop_listening)
     root.mainloop()
 
 
