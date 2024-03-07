@@ -5,7 +5,7 @@ from friday_voice import FridayVoice
 from colorama import Fore
 
 
-client = openai.Client(api_key="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")
+client = openai.Client(api_key="your_api_key")
 
 
 def GoogleSearch(params):
