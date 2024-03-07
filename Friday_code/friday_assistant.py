@@ -5,7 +5,7 @@ from friday_tools import generate_google_search_query, scrape_website, get_organ
 
 class FridayAssistant:
     def __init__(self):
-        self.client = openai.Client(api_key="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")
+        self.client = openai.Client(api_key="Your_api_key")
         self.assistant = self.client.beta.assistants.create(
             name="Friday",
             instructions="Your name is Friday and you are a Google Search Expert. Say sir like you are a servant. You are an assistant capable of fetching and displaying news articles based on user queries.",
