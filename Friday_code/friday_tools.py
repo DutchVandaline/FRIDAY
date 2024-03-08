@@ -80,7 +80,7 @@ def fetch_weather_data(api_key):
     else:
         print("Failed to fetch your current location.")
 
-    url = f"http://api.openweathermap.org/data/2.5/weather?lat=37.523663842914&lon=126.87147199816&appid={api_key}&units=metric"
+    url = f"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}&units=metric"
     response = requests.get(url)
     if response.status_code == 200:
         weather_data = response.json()
