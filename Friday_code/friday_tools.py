@@ -13,7 +13,7 @@ client = openai.Client(api_key="Your_API_KEY")
 
 
 def GoogleSearch(params):
-    url = f"https://www.googleapis.com/customsearch/v1?q={params['q']}&tbm=nws&location={params['location']}&num={params['num']}&key={params['api_key']}&cx={params['cx']}"
+    url = f"https://www.googleapis.com/customsearch/here goes your qurey"
     response = requests.get(url)
     data = response.json()
     return data
@@ -25,7 +25,7 @@ def generate_google_search_query(user_input):
         completion = client.chat.completions.create(
             model="gpt-4-1106-preview",
             messages=[
-                {"role": "system", "content": "Your task is to convert unstructured user inputs to optimized Google search queries. Example: USER INPUT: 'Why was Sam Altman fired from OpenAI?' OPTIMIZED Google Search Query: 'Sam Altman Fired OpenAI'"},
+                {"role": "system", "content": "Your content here"},
                 {"role": "user", "content": prompt}
             ]
         )
@@ -80,7 +80,7 @@ def fetch_weather_data(api_key):
     else:
         print("Failed to fetch your current location.")
 
-    url = f"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}&units=metric"
+    url = f"use your url"
     response = requests.get(url)
     if response.status_code == 200:
         weather_data = response.json()
@@ -92,8 +92,6 @@ def get_location():
     g = geocoder.ip('me')
     return g.latlng
 
-#basically, it's chrome. 
-#TODO: Add more programs. 
 def program_start(program_name):
     FridayVoice.speak_response(f"Initiating {program_name}", client)
     program_name_lower = str(program_name).lower()
