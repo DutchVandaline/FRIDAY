@@ -87,7 +87,7 @@ while True:
     completion = client.chat.completions.create(
                 model="gpt-4-1106-preview",
                 messages=[
-                    {"role": "system", "content": "Determine whether user is asking. First, there are two big categories. Daily talk and Command. Second, in command there are few categories. Google search command, Run program command, weather command, computer status command, Other command. Also, if user says to quit or sleep, return 'finishing session'  Example1. User: 'Hello' System: 'daily' Example2. User: 'Search about Oscars' System: 'google search command' Example3.User: 'Execute(Run) Chrome' System: 'run program command, Chrome' Example4. User: 'Call me as Stark' System: 'other command' Example5. User: 'How's the weather today?' System: 'weather command' Example5. User: 'How's the battery?' System: 'computer status' Example6. User: 'Go to sleep friday' System: ''finishing session'"},
+                    {"role": "system", "content": "Your content goes here"},
                     {"role": "user", "content": prompt}
                 ]
             )
@@ -139,7 +139,7 @@ while True:
                 completion = client.chat.completions.create(
                 model="gpt-4-1106-preview",
                 messages=[
-                    {"role": "system", "content": "Your name is Friday. Say sir like you are a servant. You are a helpful assistant, always return only the essential parts that answers the USER original USER query. Be terse"},
+                    {"role": "system", "content": "Your content goes here"},
                     {"role": "user", "content": grounding_context}
                     ]
                 ) 
@@ -172,7 +172,7 @@ while True:
             completion = client.chat.completions.create(
                 model="gpt-4-1106-preview",
                 messages=[
-                    {"role": "system", "content": "Your name is Friday. Say sir like you are a servant. I am giving you a weather data add those data and make a remarkable result to User. Also, recommend some clothes for user. be terse"},
+                    {"role": "system", "content": "Your content goes here"},
                     {"role": "user", "content": grounding_context}
                     ]
                 )
@@ -182,12 +182,5 @@ while True:
             
         else:
             print("Failed to fetch weather data.")
-    
-    elif 'computer status' in response_content:
-        computer_status()
 
-    elif 'finishing session' in response_content:
-        print("Finishing session")
-        FridayVoice.speak_response("Finishing Session. Call me when needed, sir.", client)
-        break
     
