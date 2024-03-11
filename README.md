@@ -1,4 +1,4 @@
-# F.R.I.D.A.Y MK1
+# F.R.I.D.A.Y
 ### Farily Reliable Interface with Dynamic Artificial Intelligence<br><br>
 🏠 F.R.I.D.A.I is known as Friday, like Tony Stark's AI Assistant. It can serve you as JARVIS and FRIDAY.<br>
 🚀 You can call her FRIDAY.
