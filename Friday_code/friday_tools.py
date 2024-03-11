@@ -114,10 +114,3 @@ def computer_status():
     print(f"Memory utilization: {psutil.virtual_memory().percent}%") 
     FridayVoice.speak_response(f"Battery {percent}%. {plugged}, sir. CPU utilization {psutil.cpu_percent()}% and Memory utilization: {psutil.virtual_memory().percent}%, sir", client)
     
-
-def show_chrome_with_url(inputurl):
-    url = inputurl
-
-    chrome_path = 'YOUR_PATH_TO_CHROME'
-    webbrowser.get(chrome_path).open(url)
-
