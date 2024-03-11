@@ -44,24 +44,3 @@ class FridayListen:
         except sr.RequestError as e:
             print("Sorry, I couldn't request results from Google Speech Recognition service; {0}".format(e))
             return None
-
-    def listen_for_hotword():
-        recognizer = sr.Recognizer()
-
-        while True:
-            with sr.Microphone() as source:
-                print("Waiting for hotword...")
-                recognizer.adjust_for_ambient_noise(source)
-                audio = recognizer.listen(source)
-
-            try:
-                hotword = recognizer.recognize_google(audio).lower()
-                if "friday" in hotword:
-                    print("Hotword 'Friday' detected! Proceeding with further instructions...")
-                    return True
-                else:
-                    return False
-            except sr.UnknownValueError:
-                pass
-            except sr.RequestError:
-                print("Could not request results from Google Speech Recognition service; check your internet connection")
